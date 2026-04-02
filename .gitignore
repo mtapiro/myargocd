@@ -8,6 +8,10 @@
 *.tfvars.json
 *.tfvars.json.lock
 *.tfvars.json.lock.lock
+
+# Kubernetes
+*kubeconfig*
+*.kubeconfig
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[codz]
