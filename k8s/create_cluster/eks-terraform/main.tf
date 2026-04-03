@@ -113,8 +113,9 @@ module "eks" {
 
       # Custom labels for node selection
       labels = {
-        node-type = "small_node_label"
+        "node.type" = "node.small"
         node-size = "t2.small"
+        pool      = "node_small"
       }
 
       # Use custom node IAM role
@@ -130,8 +131,9 @@ module "eks" {
 
       # Custom labels for node selection
       labels = {
-        node-type = "medium_node_label"
+        "node.type" = "node.medium"
         node-size = "t2.medium"
+        pool      = "node_medium"
       }
 
       # Use custom node IAM role

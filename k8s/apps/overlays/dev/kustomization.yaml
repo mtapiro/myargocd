@@ -1,0 +1,20 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: dev
+
+resources:
+  - namespace.yaml
+  - ../../base/testsite
+
+labels:
+  - pairs:
+      environment: dev
+    includeSelectors: true
+
+patches:
+  - path: patches/testsite-deployment.yaml
+
+images:
+  - name: 609177096835.dkr.ecr.eu-west-1.amazonaws.com/utils/testsite
+    newTag: latest
