@@ -1,0 +1,65 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: workloads
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  description: Project for application workloads (dev, stage, prod)
+
+  # Source repositories - restrict to your repo
+  sourceRepos:
+    - '*'  # Replace with your specific repo URL for security
+    # - 'https://github.com/your-org/myargocd.git'
+
+  # Destination clusters and namespaces
+  destinations:
+    - namespace: dev
+      server: https://kubernetes.default.svc
+    - namespace: stage
+      server: https://kubernetes.default.svc
+    - namespace: prod
+      server: https://kubernetes.default.svc
+    # Allow ArgoCD namespace for app-of-apps
+    - namespace: argocd
+      server: https://kubernetes.default.svc
+
+  # Cluster resource allow list
+  clusterResourceWhitelist:
+    - group: ''
+      kind: Namespace
+
+  # Namespace resource allow list (all resources allowed)
+  namespaceResourceWhitelist:
+    - group: '*'
+      kind: '*'
+
+  # Sync windows - prevent production deployments during business hours (optional)
+  # syncWindows:
+  #   - kind: deny
+  #     schedule: '0 9 * * 1-5'  # Mon-Fri 9 AM
+  #     duration: 8h
+  #     applications:
+  #       - '*-prod'
+  #     namespaces:
+  #       - prod
+  #     clusters:
+  #       - '*'
+
+  # Roles for RBAC
+  roles:
+    - name: developer
+      description: Developer access - read-only sync status
+      policies:
+        - p, proj:workloads:developer, applications, get, workloads/*, allow
+        - p, proj:workloads:developer, applications, sync, workloads/*-dev, allow
+      groups:
+        - developers
+
+    - name: devops
+      description: DevOps access - full control
+      policies:
+        - p, proj:workloads:devops, applications, *, workloads/*, allow
+      groups:
+        - devops

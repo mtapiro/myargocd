@@ -115,7 +115,38 @@ Note: ECR tokens expire after 12 hours. Consider using a CronJob or external-sec
 
 ## ArgoCD Integration
 
-Each overlay can be used as an ArgoCD Application source:
+This repository includes a complete ArgoCD setup. See `../argocd/README.md` for installation instructions.
+
+### Quick Setup
+
+```bash
+# Install ArgoCD
+./scripts/argocd-setup.sh install
+
+# Deploy applications via GitOps
+./scripts/argocd-setup.sh apps
+
+# Get admin password
+./scripts/argocd-setup.sh password
+
+# Access UI
+./scripts/argocd-setup.sh port-forward
+```
+
+### How It Works
+
+The `argocd-apps/` directory contains:
+- **AppProject** (`workloads`) - RBAC and destination restrictions
+- **ApplicationSet** - Auto-discovers apps and creates ArgoCD Applications for each environment
+
+When you add a new app to `base/<app-name>/`, the ApplicationSet automatically creates:
+- `<app-name>-dev` (auto-sync enabled)
+- `<app-name>-stage` (auto-sync enabled)
+- `<app-name>-prod` (manual sync for safety)
+
+### Manual Application Example
+
+If you prefer manual Application definitions:
 
 ```yaml
 apiVersion: argoproj.io/v1alpha1
@@ -124,6 +155,7 @@ metadata:
   name: testsite-dev
   namespace: argocd
 spec:
+  project: workloads
   source:
     repoURL: <your-repo-url>
     path: k8s/apps/overlays/dev

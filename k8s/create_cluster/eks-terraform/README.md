@@ -1,4 +1,6 @@
-#Terrafom apply:
+### Terrafom apply:
+```bash
+
 - From : myargocd/k8s/create_cluster/eks-terraform
 - Run terraform apply
 
@@ -8,3 +10,5 @@
 - OR: 
     - kubectl get nodes
     - k9s
+
+```

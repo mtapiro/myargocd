@@ -1,0 +1,93 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: workloads
+  namespace: argocd
+spec:
+  # Use go templates for more flexibility
+  goTemplate: true
+  goTemplateOptions: ["missingkey=error"]
+
+  generators:
+    # Matrix generator: environments × applications
+    - matrix:
+        generators:
+          # Environment generator
+          - list:
+              elements:
+                - env: dev
+                  namespace: dev
+                  syncWave: "1"
+                  autoSync: true
+                  prune: true
+                - env: stage
+                  namespace: stage
+                  syncWave: "2"
+                  autoSync: true
+                  prune: true
+                - env: prod
+                  namespace: prod
+                  syncWave: "3"
+                  autoSync: false  # Manual sync for production
+                  prune: false
+
+          # Application generator - discovers apps from git
+          - git:
+              repoURL: https://github.com/mtapiro/myApps.git
+              revision: HEAD
+              directories:
+                - path: k8s/apps/base/*
+
+  template:
+    metadata:
+      name: '{{ .path.basename }}-{{ .env }}'
+      namespace: argocd
+      labels:
+        app.kubernetes.io/name: '{{ .path.basename }}'
+        environment: '{{ .env }}'
+      annotations:
+        argocd.argoproj.io/sync-wave: '{{ .syncWave }}'
+      finalizers:
+        - resources-finalizer.argocd.argoproj.io
+    spec:
+      project: workloads
+
+      source:
+        repoURL: https://github.com/your-org/myargocd.git
+        targetRevision: HEAD
+        path: 'k8s/apps/overlays/{{ .env }}'
+
+      destination:
+        server: https://kubernetes.default.svc
+        namespace: '{{ .namespace }}'
+
+      syncPolicy:
+        # Conditional auto-sync based on environment
+        automated:
+          prune: '{{ .prune }}'
+          selfHeal: '{{ .autoSync }}'
+          allowEmpty: false
+        syncOptions:
+          - CreateNamespace=true
+          - PrunePropagationPolicy=foreground
+          - PruneLast=true
+          - ApplyOutOfSyncOnly=true
+          - ServerSideApply=true
+        retry:
+          limit: 5
+          backoff:
+            duration: 5s
+            factor: 2
+            maxDuration: 3m
+
+      # Ignore differences for fields managed by controllers
+      ignoreDifferences:
+        - group: apps
+          kind: Deployment
+          jsonPointers:
+            - /spec/replicas
+          jqPathExpressions:
+            - .spec.template.metadata.annotations."kubectl.kubernetes.io/restartedAt"
+
+      # Health check settings
+      revisionHistoryLimit: 3
