@@ -53,7 +53,7 @@ spec:
       project: workloads
 
       source:
-        repoURL: https://github.com/your-org/myargocd.git
+        repoURL: https://github.com/mtapiro/myApps.git
         targetRevision: HEAD
         path: 'k8s/apps/overlays/{{ .env }}'
 
