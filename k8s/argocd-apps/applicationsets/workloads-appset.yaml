@@ -12,18 +12,12 @@ spec:
     # Matrix generator: environments × applications
     - matrix:
         generators:
-          # Environment generator
+          # Environment generator (dev only - stage/prod managed by separate ArgoCD instances)
           - list:
               elements:
                 - env: dev
                   namespace: dev
                   syncWave: "1"
-                - env: stage
-                  namespace: stage
-                  syncWave: "2"
-                - env: prod
-                  namespace: prod
-                  syncWave: "3"
 
           # Application generator - discovers apps from git
           - git:
