@@ -18,22 +18,16 @@ spec:
                 - env: dev
                   namespace: dev
                   syncWave: "1"
-                  autoSync: true
-                  prune: true
                 - env: stage
                   namespace: stage
                   syncWave: "2"
-                  autoSync: true
-                  prune: true
                 - env: prod
                   namespace: prod
                   syncWave: "3"
-                  autoSync: false  # Manual sync for production
-                  prune: false
 
           # Application generator - discovers apps from git
           - git:
-              repoURL: https://github.com/mtapiro/myApps.git
+              repoURL: https://github.com/mtapiro/myargocd.git
               revision: HEAD
               directories:
                 - path: k8s/apps/base/*
@@ -53,7 +47,7 @@ spec:
       project: workloads
 
       source:
-        repoURL: https://github.com/mtapiro/myApps.git
+        repoURL: https://github.com/mtapiro/myargocd.git
         targetRevision: HEAD
         path: 'k8s/apps/overlays/{{ .env }}'
 
@@ -62,10 +56,9 @@ spec:
         namespace: '{{ .namespace }}'
 
       syncPolicy:
-        # Conditional auto-sync based on environment
         automated:
-          prune: '{{ .prune }}'
-          selfHeal: '{{ .autoSync }}'
+          prune: true
+          selfHeal: true
           allowEmpty: false
         syncOptions:
           - CreateNamespace=true
