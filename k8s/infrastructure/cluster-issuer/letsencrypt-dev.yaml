@@ -4,8 +4,8 @@ metadata:
   name: letsencrypt-dev
 spec:
   acme:
-    # Staging server for dev (no rate limits, but browser shows certificate warning)
-    server: https://acme-staging-v02.api.letsencrypt.org/directory
+    # Production server (trusted certificates, but has rate limits)
+    server: https://acme-v02.api.letsencrypt.org/directory
     email: tapiromeir@gmail.com
     privateKeySecretRef:
       name: letsencrypt-dev
