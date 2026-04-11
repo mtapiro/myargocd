@@ -5,6 +5,9 @@ namespace: argocd
 
 resources:
   - ../../base
+  # Choose one ingress option:
+  # - ingress-alb.yaml      # For AWS ALB + ACM certificate
+  - ingress-nginx.yaml      # For NGINX Ingress + Let's Encrypt
 
 patches:
   - path: argocd-cm-patch.yaml

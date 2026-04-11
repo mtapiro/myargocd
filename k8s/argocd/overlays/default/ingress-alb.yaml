@@ -12,8 +12,8 @@ metadata:
     alb.ingress.kubernetes.io/healthcheck-protocol: HTTPS
     alb.ingress.kubernetes.io/healthcheck-path: /healthz
     alb.ingress.kubernetes.io/listen-ports: '[{"HTTPS":443}]'
-    # SSL certificate - update with your ACM certificate ARN
-    # alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:region:account:certificate/xxx
+    # SSL certificate - UPDATE THIS with your ACM certificate ARN
+    alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:REGION:ACCOUNT_ID:certificate/CERTIFICATE_ID
     # Sticky sessions (optional)
     alb.ingress.kubernetes.io/target-group-attributes: stickiness.enabled=true,stickiness.lb_cookie.duration_seconds=3600
     # Security group (optional)
@@ -23,7 +23,7 @@ metadata:
 spec:
   ingressClassName: alb
   rules:
-    - host: argocd.example.com
+    - host: argo.tapiromeir.com
       http:
         paths:
           - path: /

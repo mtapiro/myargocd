@@ -6,6 +6,13 @@ namespace: argocd
 resources:
   # AppProject definitions
   - projects/workloads-project.yaml
+  - projects/infrastructure-project.yaml
+
+  # Infrastructure applications (deployed first via sync-wave)
+  - applications/aws-load-balancer-controller.yaml
+  - applications/cert-manager.yaml
+  - applications/nginx-ingress.yaml
+  - applications/cluster-issuer.yaml
 
   # ApplicationSet for workloads (auto-discovers apps)
   - applicationsets/workloads-appset.yaml
